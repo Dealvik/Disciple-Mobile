@@ -3,19 +3,49 @@ import { Text, View, StyleSheet, ScrollView, Image } from "react-native";
 import { Link } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Redirect, router } from "expo-router";
-
 import { images } from '../constants';
 import CustomButton from "../components/customButton";
 import SignIn from "./(auth)/sign-in";
 import {
     ClerkProvider,
-    SignInButton,
     SignedIn,
     SignedOut,
-    UserButton
   } from '@clerk/clerk-expo'
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from 'expo-secure-store'
 import HomeScreen from "./Home/homeScreen";
+
+const tokenCache = {
+    async getToken(key) {
+      try {
+        const item = await SecureStore.getItemAsync(key)
+        if (item) {
+          console.log(`${key} was used 🔐 \n`)
+        } else {
+          console.log('No values stored under key: ' + key)
+        }
+        return item
+      } catch (error) {
+        console.error('SecureStore get item error: ', error)
+        await SecureStore.deleteItemAsync(key)
+        return null
+      }
+    },
+    async saveToken(key, value) {
+      try {
+        return SecureStore.setItemAsync(key, value)
+      } catch (err) {
+        return
+      }
+    },
+  }
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+if (!publishableKey) {
+    throw new Error(
+      'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
+    )
+  }
 
 const ExpoSecureStore = {
   setItem: (key, value) => SecureStore.setItemAsync(key, value),
@@ -69,10 +99,10 @@ export default function App() {
         // </SafeAreaView>
 
         <ClerkProvider 
-          publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
-          tokenCache={ExpoSecureStore}  // Add ExpoSecureStore here
+          publishableKey={process.env.publishableKey}
+          tokenCache={tokenCache}  // Add ExpoSecureStore here
         >
-            <View style={{ flex: 1 }}>
+            <View style={styles.container}>
                 <SignedIn>
                     <HomeScreen />
                 </SignedIn>
@@ -86,6 +116,6 @@ export default function App() {
 
 const styles = StyleSheet.create({
     container: {
-        display: 'flex',
+        flex: 1,
     }
 })

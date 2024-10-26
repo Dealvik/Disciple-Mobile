@@ -5,7 +5,8 @@ import { Button } from '@rneui/themed';
 import * as WebBrowser from 'expo-web-browser'
 import { useWarmUpBrowser } from '../hooks/useWarmUpBrowser';
 import { useOAuth } from '@clerk/clerk-expo';
- 
+import { supabase } from '../Utils/supabaseConfig';
+
 WebBrowser.maybeCompleteAuthSession();
 
 export default function SignIn() {
@@ -14,12 +15,30 @@ export default function SignIn() {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
   const onPress = React.useCallback(async () => {
+    
     try {
-      const { createdSessionId, signIn, signUp, setActive } = 
-        await startOAuthFlow();
+      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
 
       if (createdSessionId) {
         setActive({ session: createdSessionId });
+        console.log(signUp);
+
+        if (signUp) {
+          const { data, error } = await supabase
+          .from('users')
+          .insert([
+            { 
+              name: signUp?.firstName, 
+              email: signUp?.emailAddress,
+              username: (signUp?.emailAddress).split('@')[0]
+             },
+          ])
+          .select()
+
+          if (data) {
+            console.log(data);
+          }
+        }
       } else {
         // Use signin or signUp for next steps such as MFA
       }
