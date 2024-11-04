@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React, { useEffect } from 'react'
 import { useUser } from '@clerk/clerk-expo'
-import { supabase } from '../Utils/supabaseConfig';
+import { supabase } from '../../Utils/supabaseConfig';
 
 const HomeScreen = () => {
   const { user } = useUser();
