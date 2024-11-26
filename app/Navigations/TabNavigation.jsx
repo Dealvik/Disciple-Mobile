@@ -7,6 +7,7 @@ import AddScreen from './../Screens/Add/AddScreen';
 import ProfileScreen from './../Screens/Profile/ProfileScreen';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from './../Utils/Colors';
+import AddScreenNavigation from './AddScreenNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,7 +16,8 @@ const TabNavigation = () => {
         <Tab.Navigator 
             independent={true}
             screenOptions={{
-                tabBarActiveTintColor:Colors.BLACK
+                tabBarActiveTintColor:Colors.BLACK,
+                headerShown: false,
             }}
         >
             <Tab.Screen name='Home' component={HomeScreen}
@@ -32,7 +34,7 @@ const TabNavigation = () => {
                     )
                 }}
             />
-            <Tab.Screen name='Add' component={AddScreen} 
+            <Tab.Screen name='Add' component={AddScreenNavigation} 
                 options={{
                     tabBarIcon:({color, size}) => (
                         <Ionicons name="add-circle" size={size} color={color} />
