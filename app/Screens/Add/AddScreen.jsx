@@ -3,7 +3,7 @@ import React from 'react'
 import Colors from '../../Utils/Colors'
 import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native-stack';
 
 
 const AddScreen = () => {

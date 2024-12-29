@@ -1,6 +1,6 @@
 import { View, Text, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native-stack'
 import { Image } from 'react-native';
 import { TextInput } from 'react-native';
 import Colors from '../../Utils/Colors';

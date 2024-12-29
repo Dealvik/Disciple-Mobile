@@ -52,19 +52,19 @@ const ExpoSecureStore = {
 export default function App() {
     return (
         <ClerkProvider 
-          publishableKey={process.env.publishableKey}
-          tokenCache={tokenCache}  // Add ExpoSecureStore here
+          publishableKey={publishableKey} // Correct variable
+          tokenCache={tokenCache}
         >
-            <View style={styles.container}>
-                <SignedIn>
-                    <NavigationContainer independent={true}>
-                      <TabNavigation />
-                    </NavigationContainer>
-                </SignedIn>
-                <SignedOut>
-                    <SignIn />
-                </SignedOut>
-            </View>
+          <View style={styles.container}>
+            <SignedIn>
+              <NavigationContainer independent={true}>
+                <TabNavigation />
+              </NavigationContainer>
+            </SignedIn>
+            <SignedOut>
+              <SignIn />
+            </SignedOut>
+          </View>
         </ClerkProvider>
     );
 }
