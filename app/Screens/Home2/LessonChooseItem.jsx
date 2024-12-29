@@ -1,118 +1,87 @@
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, SafeAreaView  } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useRoute } from '@react-navigation/native'; // Correct import
-import { supabase } from '../../Utils/supabaseConfig';
+import React from 'react';
+import { View, Text, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 
-const LessonChooseItem = () => {
-  const route = useRoute(); 
-  const lesson = route.params; 
+const LessonChooseItem = ({ route }) => {
+  const { lessonTitle, lessonDetails } = route.params;
 
-  const [lessonDetails, setLessonDetails] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   // Simulate fetching lesson details based on the lesson name
-  //   setLessonDetails([`Details for ${lesson.selectedLesson}`]);
-  //   console.log(lesson);
-  // }, [lesson]);
-
-  useEffect(() => {
-    // Fetch lesson details from Supabase
-    const fetchLessonDetails = async () => {
-      try {
-        
-        // map and print all data in lesson obj
-        // {Object.entries(lesson).map(([key, value]) => (
-        //   console.log(`${key} ${value}`)
-        // ))}
-
-        console.log(`lesson is ${lesson.selectedLesson}`);
-
-        const { data: lessons , error } = await supabase
-          .from('lessons') // Replace with your Supabase table name
-          .select('*') // Select the necessary fields
-          .eq('title', lesson.selectedLesson); // Filter by lesson ID or name
-        
-        if (error) {
-          console.error('Error fetching lesson details:', error);
-          return;
-        }
-
-        setLessonDetails(lessons || []); // Set the lesson details to the fetched data
-      } catch (err) {
-        console.error('Unexpected error:', err);
-      } finally {
-        setLoading(false); // Stop loading indicator
-      }
-    };
-
-    fetchLessonDetails();
-  }, [lesson]);
-
-  if (loading) {
+  if (!lessonDetails || lessonDetails.length === 0) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <Text>No lesson details available.</Text>
+      </SafeAreaView>
     );
   }
 
-  const renderLessonItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>{item.title}</Text>
-      <Text style={styles.cardBody}>{item.body}</Text>
-      <Text style={styles.cardCompleted}>
-        {item.completed ? 'Completed' : 'Not Completed'}
-      </Text>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>{lessonTitle}</Text>
       <FlatList
         data={lessonDetails}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderLessonItem}
-        contentContainerStyle={styles.listContainer}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.lessonCard}>
+            <Text style={styles.lessonCardTitle}>{item.lessons.title}</Text>
+            <Text style={styles.lessonCardBody}>{item.lessons.body}</Text>
+            <Text
+              style={[
+                styles.lessonCardStatus,
+                item.completed ? styles.completed : styles.notCompleted,
+              ]}
+            >
+              {item.completed ? 'Completed' : 'Not Completed'}
+            </Text>
+          </View>
+        )}
       />
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({ 
+
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50, // Add padding to avoid overlap
-
-    backgroundColor: '#f8f8f8',
-  },
-  listContainer: {
-    padding: 20,
-  },
-  card: {
+    padding: 16,
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
-    marginVertical: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+    color: 'purple',
+  },
+  lessonCard: {
+    backgroundColor: '#f9f9f9',
+    padding: 16,
+    marginBottom: 10,
+    borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
-  cardTitle: {
-    fontSize: 20,
+  lessonCardTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 8,
   },
-  cardBody: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  cardCompleted: {
+  lessonCardBody: {
     fontSize: 14,
-    fontStyle: 'italic',
     color: '#666',
+    marginBottom: 8,
+  },
+  lessonCardStatus: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'right',
+  },
+  completed: {
+    color: 'green',
+  },
+  notCompleted: {
+    color: 'red',
   },
 });
 
